@@ -6,18 +6,19 @@
 import os
 import argparse
 def main(args=None):
-    if (os.path.exists(".\exam_ddc.ini")) == True:
-        os.remove(".\exam_ddc.ini")
+    #if (os.path.exists(".\exam_ddc.ini")) == True:
+    #    os.remove(".\exam_ddc.ini")
     parser = argparse.ArgumentParser()   
-    parser.add_argument("-b", "--workmode", type=str, help="WorkMode принимает значения 0, 1")
-    parser.add_argument("-c", "--filename", type=str, help="Конечное имя файла")
-    parser.add_argument("-d", "--DDCChannelMask", type=str, help="DDCChannelMask принимает значения: 2, 4, 6, 8")
-    parser.add_argument("-e", "--DDCProgramfile", type=int, help="Начальная частота для DDCProgramfile:(10k, 104k, 212k, 320k, 396k, 510k, 636k, 850k, 1000k), указать число в степени 10^(-3)")
+    parser.add_argument("-w", "--workmode", type=int, help="WorkMode [0, 1]")
+    parser.add_argument("-fn", "--filename", type=str, help="output filename for workmode 1")
+    parser.add_argument("-c", "--channels", type=int, help="Number of channels [1,2,3,4]")
+    parser.add_argument("-f", "--frequencies", type=str, help="Frequencies in kHz for channels")
+    parser.add_argument("-s", "--sampling_rate", type=str, help="Sampling rate in kHz [12.5, 125, 250, 375, 500, 600, 750, 1000, 1250]")
     args = parser.parse_args()
     b = args.workmode
-    c = args.filename
-    d = args.DDCChannelMask
-    e = args.DDCProgramfile
+    c = args.channels
+    d = args.channels
+    e = args.sampling_rate
     a = {}
     a[0] = "// Файл параметров инициализации для субмодуля ADMDDC4x16, установленного на базовые модули AMBPCX/AMBPCD/AMBPEX2/AMBPEX8\n"
     a[1] = "\n"
@@ -154,7 +155,7 @@ def main(args=None):
     a[124] = "MasterMode= 1		; 0 - SLAVE, 1 - SINGLE, 2 - MASTER\n"
     a[125] = "\n"
     i = 0
-    cfg = open (".\exam_ddc.ini", "w+")
+    cfg = open (".\exam_ddc.ini", "w")
     for i in range(125):
         cfg.writelines(a[i])
 if __name__=="__main__":
