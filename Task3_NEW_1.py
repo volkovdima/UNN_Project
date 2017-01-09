@@ -46,6 +46,15 @@ def main(args=None):
     if c>4 or c<1:
         raise ValueError('Number of channels must be in range [1,4]')
     
+    if c==1:
+        c_str='0x1'
+    if c==2:
+        c_str='0x3'
+    if c==3:
+        c_str='0x7'
+    if c==4:
+        c_str='0xF'
+    
     
     if (',' in f) == False and len(f.split(','))!=1:
         raise ValueError("Error while parsing list of frequencies")
@@ -84,11 +93,25 @@ def main(args=None):
     
     if len(f_parse)!=c:
         raise ValueError('Length of list of frequencies must be equal to number of channels')
+        
+    print(w)
+    print(fn)
+    print(c)
+    print(f_str_list)
+    print(sr_string)
     
-    
+    if len(f_str_list)==1:
+        f_str_list.append(f_str_list[-1])
+        f_str_list.append(f_str_list[-1])
+        f_str_list.append(f_str_list[-1])
+    if len(f_str_list)==2:
+        f_str_list.append(f_str_list[-1])
+        f_str_list.append(f_str_list[-1])
+    if len(f_str_list)==3:
+        f_str_list.append(f_str_list[-1])
 
         
-    
+    print(f_str_list)
     
     a[0] = "// Файл параметров инициализации для субмодуля ADMDDC4x16, установленного на базовые модули AMBPCX/AMBPCD/AMBPEX2/AMBPEX8\n"
     a[1] = "\n"
@@ -107,10 +130,10 @@ def main(args=None):
     a[14] = "SamplesPerChannel= 16384       ;число собираемых отсчётов на канал при работе с ISVI\n"
     a[15] = "EnableDDC= 1       ;0-отсчёты с АЦП (DDC выключено), 1-отсчёты с DDC,\n"
     a[16] = "           ;2 - отсчёты с АЦП в SRDRAM / 1-отсчёты с DDC в FIFO\n"
-    a[17] = "WorkMode="+b+"     ;0-сбор данных с последующей записью в файл data.bin (для ISVI)\n"
-    a[18] = "                        ;1-сбор с непосредственной записью данных в файл с заданным именем (не прерывая сбора)\n"
+    a[17] = "WorkMode= "+str(w)+"\n"
+    a[18] = "                        ;0-сбор данных с последующей записью в файл data.bin (для ISVI), 1-сбор с непосредственной записью данных в файл с заданным именем (не прерывая сбора)\n"
     a[19] = "\n"
-    a[20] = "DirFileName=."+"\\"+c+".bin    ;имя файла для прямой записи\n"
+    a[20] = "DirFileName= "+fn+"\n"
     a[21] = "DirFileBufSize= 3072       ;размер буфера (Кбайт)при прямой записи в файл\n"
     a[22] = "DirNumBufWrite= 100000     ;число буферов записываемх в файл\n"
     a[23] = "                           ;размер файла равен DirFileBufSize*DirNumBufWrite (Кбайт)\n"
@@ -138,7 +161,7 @@ def main(args=None):
     a[45] = ";ChannelMask=0x2               ; Mask of channels (2 channels)\n"
     a[46] = ";ChannelMask=0x3               ; Mask of channels (3 channels)\n"
     a[47] = "\n"
-    a[48] = "DDCChannelMask= 0x"+d+"        ;маска включённых каналов DDC: 0..0xffff(режим EnableDDC=1)\n"
+    a[48] = "DDCChannelMask= "+c_str+"\n"
     a[49] = "\n"
     a[50] = ";DDCChannelMask=0x1        ; DDC Mask of 2 channels\n"
     a[51] = ";DDCChannelMask=0x3        ; DDC Mask of 4 channels\n"
@@ -147,11 +170,11 @@ def main(args=None):
     a[54] = "\n"
     a[55] = "DataFormat= 0      ;формат данных DDC: 0-16 бит, 4-24 бита; АЦП: 0-16 бит, 1-8 бит\n"
     a[56] = "\n"
-    a[57] = ";FrequencyNCO= 4990000.0   ;частота NCO DDC всех канало\n"
-    a[58] = "FrequencyNCO0= 4375000.0   ;частота NCO DDC канала 0\n"
-    a[59] = "FrequencyNCO1= 9996000.0   ;частота NCO DDC канала 1\n"
-    a[60] = "FrequencyNCO2= 9996000.0   ;частота NCO DDC канала 2\n"
-    a[61] = "FrequencyNCO3= 14996000.0  ;частота NCO DDC канала 3\n"
+    a[57] = "\n"
+    a[58] = "FrequencyNCO0= "+ f_str_list[0] + "\n"
+    a[59] = "FrequencyNCO1= "+ f_str_list[1] + "\n"
+    a[60] = "FrequencyNCO2= "+ f_str_list[2] + "\n"
+    a[61] = "FrequencyNCO3= "+ f_str_list[3] + "\n"
     a[62] = "FrequencyNCO4= 10700000.0  ;частота NCO DDC канала 4\n"
     a[63] = "FrequencyNCO5= 10700000.0  ;частота NCO DDC канала 5\n"
     a[64] = "FrequencyNCO6= 10700000.0  ;частота NCO DDC канала 6\n"
@@ -183,17 +206,9 @@ def main(args=None):
     a[90] = "InputSource14= 0       ; номер АЦП подключённного к каналу 14 DDC\n"
     a[91] = "InputSource15= 0       ; номер АЦП подключённного к каналу 15 DDC\n"
     a[92] = "\n"
-    a[93] = ";DDCProgramFile= PRGFILES\IsGSM.prg    ; файл конфигурации микросхемы DDC\n"
-    a[95] = ";DDCProgramFile=f10k-60Md1200n.prg ; файл конфигурации микросхемы DDC\n"
-    i_2 = [10, 104, 212, 320, 396, 510, 636, 850, 1000]
-    i_5 = [1200, 120, 60, 40, 30, 25, 20, 15, 12]
-    i_3 = 0
-    for i_1 in i_2:
-        i_3 = i_3 + 1
-        if e == i_1:
-            i_1_str = str(i_1)
-            i_5_str = str(i_5[i_3 - 1])
-    a[94] = "DDCProgramFile=f"+i_1_str+"k-60Md"+i_5_str+"n.prg\n"
+    a[93] = "DDCProgramFile= "+sr_string+"\n"
+    a[94] = ";DDCProgramFile= PRGFILES\IsGSM.prg    ; файл конфигурации микросхемы DDC\n"
+    a[95] = ";DDCProgramFile=f10k-60Md1200n.prg ; файл конфигурации микросхемы DDC\n"    
     a[96] = ";DDCProgramFile=f212k-60Md60n.prg\n"
     a[97] = ";DDCProgramFile=f320k-60Md40n.prg\n"
     a[98] = ";DDCProgramFile=f396k-60Md30n.prg\n"
