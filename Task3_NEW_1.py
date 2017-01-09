@@ -6,8 +6,6 @@
 import os
 import argparse
 def main(args=None):
-    #if (os.path.exists(".\exam_ddc.ini")) == True:
-    #    os.remove(".\exam_ddc.ini")
     parser = argparse.ArgumentParser()   
     parser.add_argument("workmode", type=int, help="WorkMode [0, 1]")
     parser.add_argument("-fn", "--filename", type=str, help="Output filename for workmode 1")
@@ -67,7 +65,7 @@ def main(args=None):
         f_list.append(int(float(f_str)*1000))
         if f_list[-1]<2000 or f_list[-1]>90000000:
             raise ValueError("Frequency is out of range [2,90000] kHz")
-        f_str_list.append(str(f_list[-1])+".0")
+        f_str_list.append(str(f_list[-1])+".00")
         
     if s not in ['12.5','125','250','375','500','600','750','1000','1250']:
         raise ValueError("Sampling rate can be one of the this list [12.5,125,250,375,500,600,750,1000,1250] kHz")
